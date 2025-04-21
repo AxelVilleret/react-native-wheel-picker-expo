@@ -29,7 +29,7 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
   backgroundColor = setAlphaColor(this.props.backgroundColor as any, 1);
 
   state = {
-    selectedIndex: 0,
+    selectedIndex: this.props.selectedIndex || 0,
     itemHeight: 40,
     listHeight: 200,
     data: [],
@@ -40,6 +40,21 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
   componentDidUpdate(prevProps: IViuPickerProps) {
     if (this.props.items?.length !== prevProps.items?.length) {
       this.setData();
+    }
+
+    const { items, onChange } = this.props;
+    const selectedIndex = this.props.selectedIndex;
+
+    if (
+      selectedIndex !== undefined &&
+      selectedIndex >= 0 &&
+      selectedIndex !== prevProps.selectedIndex &&
+      selectedIndex <= items.length - 1
+    ) {
+      this.setState({ selectedIndex });
+      onChange &&
+        onChange({ index: selectedIndex, item: items[selectedIndex] });
+      this.scrollToItem(selectedIndex);
     }
   }
 
@@ -84,7 +99,7 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
     }
   }
 
-  handleOnPressItem = (index: number) => {
+  scrollToItem = (index: number) => {
     if (index >= 0 && index <= this.props.items.length - 1) {
       this.flatListRef.current?.scrollToIndex({
         animated: true,
@@ -121,7 +136,7 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
     const { width, initialSelectedIndex, flatListProps, selectedStyle } =
       this.props;
 
-    if (!data.length) return;
+    if (!data.length) return null;
 
     return (
       <View
@@ -144,7 +159,7 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
                 fontSize: itemHeight / 2,
                 height: itemHeight,
               },
-              this.handleOnPressItem,
+              this.scrollToItem,
               this.props.renderItem as any
             )
           }
@@ -223,9 +238,9 @@ const PickerItem = (
   return (
     <TouchableOpacity activeOpacity={1} onPress={() => onPress(index - 2)}>
       <View style={style}>
-        {typeof renderItem === 'function' &&
-          renderItem({ fontSize, fontColor, label: item.label, textAlign })}
-        {!renderItem && (
+        {renderItem ? (
+          renderItem({ fontSize, fontColor, label: item.label, textAlign })
+        ) : (
           <Item
             fontSize={fontSize}
             fontColor={fontColor}
