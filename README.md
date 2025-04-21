@@ -48,6 +48,7 @@ function App() {
 | items | `Array` | `Array<ItemType>` | Data that will be rendered as options |
 | onChange | `-` | `({index, item}) => void` | Function will send `item` and `index` option selected |
 | initialSelectedIndex | `-` | `number` | Inital index will be selected |
+| selectedIndex | `-` | `number` | Current selected index |
 | height | `200` | `number` | Style height for container |
 | width | `150` | `number` | Style width for container |
 | flatListProps | `-` | `FlatListProps<ItemType>` | Props of FlatList |
